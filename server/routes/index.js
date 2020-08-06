@@ -23,4 +23,13 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
+router.post('/insert', async (req, res, next) => {
+    try {
+        await db.insert(req.body)
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(500)
+    }
+});
+
 module.exports = router;
