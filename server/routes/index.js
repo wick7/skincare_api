@@ -32,4 +32,13 @@ router.post('/insert', async (req, res, next) => {
     }
 });
 
+router.put('/update/:id', async (req, res, next) => {
+    try {
+        await db.update(req.params.id, req.body)
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(500)
+    }
+});
+
 module.exports = router;
