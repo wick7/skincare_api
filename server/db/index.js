@@ -32,16 +32,18 @@ skincareDB.one = (id) => {
 skincareDB.all = (search, page) => {
 
     let firstPage = 0
-    if (page === 1 && search === undefined) {
+
+    if (page === 1) {
         page = 0
-        search = ''
     } else {
         firstPage = page + 0
         page = parseInt(firstPage) - 10
     }
-    console.log(search, page)
+    let againstStatement = 'SELECT * FROM purchased WHERE MATCH(product_name, brand, notes) AGAINST (' + "\"" + search + "*\"" + ' IN BOOLEAN MODE) ORDER BY id LIMIT ' + page + ',' + 10;
+    let withOutAgainstStatement = 'SELECT * FROM purchased ORDER BY id LIMIT ' + page + ',' + 10;
+
     return new Promise((resolve, reject) => {
-        pool.query(`SELECT * FROM purchased WHERE MATCH(product_name, brand, notes) AGAINST (? IN BOOLEAN MODE)  ORDER BY id LIMIT ?, 10`, [search + '*', page], (err, results) => {
+        pool.query(search ? againstStatement : withOutAgainstStatement, [], (err, results) => {
             if (err) {
                 return reject(err)
             }
