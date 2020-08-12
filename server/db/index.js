@@ -47,9 +47,14 @@ skincareDB.all = (search, page) => {
             if (err) {
                 return reject(err)
             }
-            return resolve(results)
+            pool.query('SELECT COUNT(*) FROM purchased;', [], (err, count) => {
+                if (err) {
+                    return reject(err)
+                }
+                return resolve({ count: count[0]['COUNT(*)'], results })
+            })
         });
-    });
+    })
 };
 
 //POST
