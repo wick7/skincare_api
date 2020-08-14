@@ -30,18 +30,21 @@ skincareDB.one = (id) => {
 //GET 
 //http://localhost:3000/api?search=mas&page=3
 skincareDB.all = (search, page) => {
+    let countStatement = ''
+
+    search = (search === "null" || !search) ? '' : search
+    countStatement = (search === "null" || !search) ? 'SELECT COUNT(*) FROM purchased;' : 'SELECT COUNT(*) FROM purchased WHERE MATCH(product_name, brand, notes) AGAINST (' + "\"" + search + "*\"" + ' IN BOOLEAN MODE)'
 
     let firstPage = 0
-    let countStatement = ''
-    if (search === "null" || !search) {
-        page = page - 1
-        search = ''
-        countStatement = 'SELECT COUNT(*) FROM purchased;'
+
+    if (page === 1) {
+        page = 0
     } else {
-        firstPage = page + 0
-        page = parseInt(firstPage) - 10
-        countStatement = 'SELECT COUNT(*) FROM purchased WHERE MATCH(product_name, brand, notes) AGAINST (' + "\"" + search + "*\"" + ' IN BOOLEAN MODE)'
+        firstPage = page.toString() + "0"
+        let newPage = parseInt(firstPage) - 10
+        page = newPage
     }
+
     let againstStatement = 'SELECT * FROM purchased WHERE MATCH(product_name, brand, notes) AGAINST (' + "\"" + search + "*\"" + ' IN BOOLEAN MODE) ORDER BY id LIMIT ' + page + ',' + 10;
     let withOutAgainstStatement = 'SELECT * FROM purchased ORDER BY id LIMIT ' + page + ',' + 10;
 
