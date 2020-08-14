@@ -32,12 +32,15 @@ skincareDB.one = (id) => {
 skincareDB.all = (search, page) => {
 
     let firstPage = 0
-
-    if (page === 1) {
-        page = 0
+    let countStatement = ''
+    if (search === "null" || !search) {
+        page = page - 1
+        search = ''
+        countStatement = 'SELECT COUNT(*) FROM purchased;'
     } else {
         firstPage = page + 0
         page = parseInt(firstPage) - 10
+        countStatement = 'SELECT COUNT(*) FROM purchased WHERE MATCH(product_name, brand, notes) AGAINST (' + "\"" + search + "*\"" + ' IN BOOLEAN MODE)'
     }
     let againstStatement = 'SELECT * FROM purchased WHERE MATCH(product_name, brand, notes) AGAINST (' + "\"" + search + "*\"" + ' IN BOOLEAN MODE) ORDER BY id LIMIT ' + page + ',' + 10;
     let withOutAgainstStatement = 'SELECT * FROM purchased ORDER BY id LIMIT ' + page + ',' + 10;
@@ -47,7 +50,7 @@ skincareDB.all = (search, page) => {
             if (err) {
                 return reject(err)
             }
-            pool.query('SELECT COUNT(*) FROM purchased;', [], (err, count) => {
+            pool.query(countStatement, [], (err, count) => {
                 if (err) {
                     return reject(err)
                 }
