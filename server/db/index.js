@@ -46,7 +46,7 @@ skincareDB.all = (search, page) => {
     }
 
     let againstStatement = 'SELECT * FROM purchased WHERE MATCH(product_name, brand, notes) AGAINST (' + "\"" + search + "*\"" + ' IN BOOLEAN MODE) ORDER BY id LIMIT ' + page + ',' + 10;
-    let withOutAgainstStatement = 'SELECT * FROM purchased ORDER BY id LIMIT ' + page + ',' + 10;
+    let withOutAgainstStatement = 'SELECT * FROM purchased JOIN `category` ON purchased.category = category.id ORDER BY purchased.id LIMIT ' + page + ',' + 10;
 
     return new Promise((resolve, reject) => {
         pool.query(search ? againstStatement : withOutAgainstStatement, [], (err, results) => {
